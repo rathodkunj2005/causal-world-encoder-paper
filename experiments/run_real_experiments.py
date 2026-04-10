@@ -286,11 +286,13 @@ def run_intervention_experiment(sentence_model, device):
             pred = baseline(torch.cat([s, a], dim=-1))
             loss = F.mse_loss(pred, y) + (1.0 - F.cosine_similarity(pred, y, dim=-1).mean())
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(baseline.parameters(), 1.0)
             opt_b.step()
 
             opt_t.zero_grad()
             t_loss, _ = twin.losses(s, a, y)
             t_loss.backward()
+            torch.nn.utils.clip_grad_norm_(twin.parameters(), 1.0)
             opt_t.step()
 
     def evaluate(model, trs, twin_mode=False):
@@ -365,6 +367,7 @@ def train_sequence_model(model, X_train, Y_train, device, epochs=12):
             pred = model(x)
             loss = F.mse_loss(pred, y) + (1.0 - F.cosine_similarity(pred, y, dim=-1).mean())
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
     return time.time() - start
 
@@ -373,6 +376,7 @@ def eval_sequence_model(model, X_test, meta, device):
     model.eval()
     with torch.no_grad():
         pred = model(torch.tensor(X_test, device=device)).cpu().numpy()
+    pred = np.nan_to_num(pred, nan=0.0, posinf=1.0, neginf=-1.0)
     return local_decode_stats(pred, meta)
 
 
@@ -453,11 +457,13 @@ def run_sparse_experiment(sentence_model, device):
             pred = dense(torch.cat([s, a], dim=-1))
             d_loss = F.mse_loss(pred, y)
             d_loss.backward()
+            torch.nn.utils.clip_grad_norm_(dense.parameters(), 1.0)
             opt_d.step()
 
             opt_s.zero_grad()
             s_loss, _ = sparse.loss(s, a, y)
             s_loss.backward()
+            torch.nn.utils.clip_grad_norm_(sparse.parameters(), 1.0)
             opt_s.step()
 
     s_test, a_test, y_test, meta = make_transition_arrays(test, action_embs)
@@ -500,7 +506,7 @@ def run_sparse_experiment(sentence_model, device):
 def main():
     ensure_dirs()
     set_seed(7)
-    device = get_device()
+    device = torch.device('cpu')
     sentence_model = load_sentence_model()
     all_results = {
         'device': str(device),
