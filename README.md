@@ -7,6 +7,8 @@ What this repo contains
 - `results/json/`: recorded numeric outputs from real runs
 - `results/figures/`: figures generated from those runs
 - `paper/main.tex`: LaTeX manuscript
+- `arxiv_submission/`: arXiv-ready source bundle directory
+- `causal-world-encoder-arxiv.tar.gz`: packaged arXiv upload archive
 - `scripts/download_data.sh`: fetches public datasets used here
 
 Datasets

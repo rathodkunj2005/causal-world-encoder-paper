@@ -95,28 +95,28 @@
           "local_top1": 0.27416173570019725,
           "local_top5": 0.5160572497850604,
           "params": 500375,
-          "train_seconds": 7.584367036819458
+          "train_seconds": 6.465491056442261
         },
         "lstm": {
           "cosine": 0.47689597413972945,
           "local_top1": 0.2870581095433166,
           "local_top5": 0.531735194457088,
           "params": 359959,
-          "train_seconds": 7.071055173873901
+          "train_seconds": 5.280247926712036
         },
         "transformer": {
           "cosine": 0.4732881968836294,
           "local_top1": 0.3150761138926819,
           "local_top5": 0.5676427451575381,
           "params": 484631,
-          "train_seconds": 28.912474155426025
+          "train_seconds": 25.31265878677368
         },
         "mlp_control": {
           "cosine": 0.5554516960192785,
           "local_top1": 0.3327264451524807,
           "local_top5": 0.6041066100237698,
           "params": 241815,
-          "train_seconds": 2.6491587162017822
+          "train_seconds": 2.1532227993011475
         }
       }
     },
@@ -129,28 +129,28 @@
           "local_top1": 0.31149402257396647,
           "local_top5": 0.5970079476390837,
           "params": 500375,
-          "train_seconds": 11.853559970855713
+          "train_seconds": 8.284396886825562
         },
         "lstm": {
           "cosine": 0.4840385679570836,
           "local_top1": 0.2865157283109597,
           "local_top5": 0.57563614506111,
           "params": 359959,
-          "train_seconds": 7.739201068878174
+          "train_seconds": 6.698382139205933
         },
         "transformer": {
           "cosine": 0.45651787343776906,
           "local_top1": 0.34782608695652173,
           "local_top5": 0.6499699459026247,
           "params": 484631,
-          "train_seconds": 33.655104875564575
+          "train_seconds": 27.391486883163452
         },
         "mlp_control": {
           "cosine": 0.5567277979822506,
           "local_top1": 0.34695785747679153,
           "local_top5": 0.649302077072063,
           "params": 241815,
-          "train_seconds": 2.38216495513916
+          "train_seconds": 1.5404689311981201
         }
       }
     },
@@ -163,28 +163,28 @@
           "local_top1": 0.2843802221566893,
           "local_top5": 0.6554605327828565,
           "params": 500375,
-          "train_seconds": 11.118542194366455
+          "train_seconds": 7.752335071563721
         },
         "lstm": {
           "cosine": 0.4792702559194598,
           "local_top1": 0.3098397719453455,
           "local_top5": 0.6685343556473017,
           "params": 359959,
-          "train_seconds": 7.137627363204956
+          "train_seconds": 5.75508713722229
         },
         "transformer": {
           "cosine": 0.46055695608113234,
           "local_top1": 0.3392312985353386,
           "local_top5": 0.6953700973164259,
           "params": 484631,
-          "train_seconds": 34.612711906433105
+          "train_seconds": 23.475986003875732
         },
         "mlp_control": {
           "cosine": 0.530388469665812,
           "local_top1": 0.35417281038041876,
           "local_top5": 0.7205347488449818,
           "params": 241815,
-          "train_seconds": 2.0619871616363525
+          "train_seconds": 1.1107923984527588
         }
       }
     },
@@ -197,56 +197,56 @@
           "local_top1": 0.3302701709244624,
           "local_top5": 0.8147399375114869,
           "params": 500375,
-          "train_seconds": 5.853312015533447
+          "train_seconds": 4.9506330490112305
         },
         "lstm": {
           "cosine": 0.5087109592289111,
           "local_top1": 0.31538320161734973,
           "local_top5": 0.8222753170373093,
           "params": 359959,
-          "train_seconds": 3.682631254196167
+          "train_seconds": 3.2214598655700684
         },
         "transformer": {
           "cosine": 0.4533715947922966,
           "local_top1": 0.4368682227531704,
           "local_top5": 0.8702444403602279,
           "params": 484631,
-          "train_seconds": 14.168437957763672
+          "train_seconds": 12.076128959655762
         },
         "mlp_control": {
           "cosine": 0.5427150487943599,
           "local_top1": 0.4159161918764933,
           "local_top5": 0.8527844146296637,
           "params": 241815,
-          "train_seconds": 0.7439489364624023
+          "train_seconds": 0.5181388854980469
         }
       }
     }
   },
   "exp5_sparse": {
     "dense": {
-      "cosine": 0.5443387664347684,
-      "local_top1": 0.3353014161639499,
-      "local_top5": 0.572840456937492
+      "cosine": 0.5466162258562222,
+      "local_top1": 0.336456595216703,
+      "local_top5": 0.5696744106447611
     },
     "sparse": {
-      "cosine": 0.6146819428561286,
-      "local_top1": 0.3283703418474308,
-      "local_top5": 0.7229281649766826
+      "cosine": 0.6144971262641449,
+      "local_top1": 0.35327086809566594,
+      "local_top5": 0.7253240919009113
     },
     "target_commitment_rate": 0.3,
-    "mean_gate_probability": 0.30596932768821716,
-    "gate_threshold_for_commit": 0.3217405080795288,
-    "actual_commitment_rate": 0.30004706285029736,
+    "mean_gate_probability": 0.291559636592865,
+    "gate_threshold_for_commit": 0.308206582069397,
+    "actual_commitment_rate": 0.30000427844093613,
     "high_change_threshold": 0.5,
-    "high_change_commitment_rate": 0.30792210666076564,
-    "low_change_commitment_rate": 0.29508196721311475,
-    "accuracy_per_commit_dense": 0.3353014161639499,
-    "accuracy_per_commit_sparse": 0.519463852844717,
+    "high_change_commitment_rate": 0.3599247621155123,
+    "low_change_commitment_rate": 0.2622253226369027,
+    "accuracy_per_commit_dense": 0.336456595216703,
+    "accuracy_per_commit_sparse": 0.59312606959498,
     "committed_subset": {
-      "cosine": 0.5920152320032128,
-      "local_top1": 0.519463852844717,
-      "local_top5": 0.9123057179523741
+      "cosine": 0.6272222203453838,
+      "local_top1": 0.59312606959498,
+      "local_top5": 0.9411009697661152
     }
   }
 }

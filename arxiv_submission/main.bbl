@@ -1,0 +1,127 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Assran et~al.(2023)Assran, Duval, Misra, Bojanowski, Vincent, Rabbat,
+  LeCun, and Ballas]{assran2023jepa}
+Mahmoud Assran, Quentin Duval, Ishan Misra, Piotr Bojanowski, Pascal Vincent,
+  Michael Rabbat, Yann LeCun, and Nicolas Ballas.
+\newblock Self-supervised learning from images with a joint-embedding
+  predictive architecture.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, pages 15619--15629, 2023.
+\newblock \doi{10.1109/CVPR52729.2023.01499}.
+\newblock URL \url{https://doi.org/10.1109/CVPR52729.2023.01499}.
+
+\bibitem[Assran et~al.(2025)Assran, Bardes, Fan, Garrido, Howes, Komeili,
+  Muckley, Rizvi, Roberts, Sinha, Zholus, Arnaud, Gejji, Martin, Hogan, Dugas,
+  Bojanowski, Khalidov, Labatut, Massa, Szafraniec, Krishnakumar, Li, Ma,
+  Chandar, Meier, LeCun, Rabbat, and Ballas]{assran2025vjepa2}
+Mahmoud Assran, Adrien Bardes, David Fan, Quentin Garrido, Russell Howes,
+  Mojtaba Komeili, Matthew Muckley, Ammar Rizvi, Claire Roberts, Koustuv Sinha,
+  Artem Zholus, Sergio Arnaud, Abha Gejji, Ada Martin, Francois~Robert Hogan,
+  Daniel Dugas, Piotr Bojanowski, Vasil Khalidov, Patrick Labatut, Francisco
+  Massa, Marc Szafraniec, Kapil Krishnakumar, Yong Li, Xiaodong Ma, Sarath
+  Chandar, Franziska Meier, Yann LeCun, Michael Rabbat, and Nicolas Ballas.
+\newblock {V-JEPA} 2: Self-supervised video models enable understanding,
+  prediction and planning, 2025.
+\newblock URL \url{https://arxiv.org/abs/2506.09985}.
+\newblock Author name resolved from PDF front matter; arXiv metadata currently
+  splits Mojtaba Komeili into two authors.
+
+\bibitem[Chen et~al.(2025)Chen, Shukor, Moutakanni, Chung, Yu, Kasarla, Bang,
+  Bolourchi, LeCun, and Fung]{chen2025vljepa}
+Delong Chen, Mustafa Shukor, Th{\'e}o Moutakanni, Willy Chung, Jade Yu, Tejaswi
+  Kasarla, Yejin Bang, Allen Bolourchi, Yann LeCun, and Pascale Fung.
+\newblock {VL-JEPA}: Joint embedding predictive architecture for
+  vision-language, 2025.
+\newblock URL \url{https://arxiv.org/abs/2512.10942}.
+
+\bibitem[De et~al.(2024)De, Smith, Fernando, Botev, Cristian-Muraru, Gu,
+  Haroun, Berrada, Chen, Srinivasan, Desjardins, Doucet, Budden, Teh, Pascanu,
+  De~Freitas, and Gulcehre]{de2024griffin}
+Soham De, Samuel~L. Smith, Anushan Fernando, Aleksandar Botev, George
+  Cristian-Muraru, Albert Gu, Ruba Haroun, Leonard Berrada, Yutian Chen,
+  Srivatsan Srinivasan, Guillaume Desjardins, Arnaud Doucet, David Budden,
+  Yee~Whye Teh, Razvan Pascanu, Nando De~Freitas, and Caglar Gulcehre.
+\newblock Griffin: Mixing gated linear recurrences with local attention for
+  efficient language models, 2024.
+\newblock URL \url{https://arxiv.org/abs/2402.19427}.
+
+\bibitem[Friston et~al.(2017)Friston, FitzGerald, Rigoli, Schwartenbeck, and
+  Pezzulo]{friston2017active}
+Karl Friston, Thomas FitzGerald, Francesco Rigoli, Philipp Schwartenbeck, and
+  Giovanni Pezzulo.
+\newblock Active inference: A process theory.
+\newblock \emph{Neural Computation}, 29\penalty0 (1):\penalty0 1--49, 2017.
+\newblock \doi{10.1162/neco_a_00912}.
+\newblock URL \url{https://doi.org/10.1162/neco_a_00912}.
+
+\bibitem[Gu and Dao(2023)]{gu2023mamba}
+Albert Gu and Tri Dao.
+\newblock Mamba: Linear-time sequence modeling with selective state spaces.
+\newblock \emph{arXiv preprint arXiv:2312.00752}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2312.00752}.
+
+\bibitem[Koutn{\'i}k et~al.(2014)Koutn{\'i}k, Greff, Gomez, and
+  Schmidhuber]{koutnik2014clockwork}
+Jan Koutn{\'i}k, Klaus Greff, Faustino Gomez, and J{\"u}rgen Schmidhuber.
+\newblock A clockwork {RNN}.
+\newblock In \emph{Proceedings of the 31st International Conference on Machine
+  Learning}, volume~32 of \emph{Proceedings of Machine Learning Research},
+  pages 1863--1871. PMLR, 2014.
+\newblock URL \url{https://proceedings.mlr.press/v32/koutnik14.html}.
+
+\bibitem[Latimer et~al.(2025)Latimer, Boschi, Neeser, Bartholomew, Srivastava,
+  Wang, and Ramakrishnan]{latimer2025hindsight}
+Chris Latimer, Nicol{\`o} Boschi, Andrew Neeser, Chris Bartholomew, Gaurav
+  Srivastava, Xuan Wang, and Naren Ramakrishnan.
+\newblock Hindsight is 20/20: Building agent memory that retains, recalls, and
+  reflects, 2025.
+\newblock URL \url{https://arxiv.org/abs/2512.12818}.
+\newblock Technical report.
+
+\bibitem[Liu et~al.(2026)Liu, Peng, Cao, Wang, Deng, Chen, Yin, and
+  Zhang]{liu2026toolgate}
+Yanming Liu, Xinyue Peng, Jiannan Cao, Xinyi Wang, Songhang Deng, Jintao Chen,
+  Jianwei Yin, and Xuhong Zhang.
+\newblock Toolgate: Contract-grounded and verified tool execution for {LLM}s,
+  2026.
+\newblock URL \url{https://arxiv.org/abs/2601.04688}.
+
+\bibitem[Maharana et~al.(2024)Maharana, Lee, Tulyakov, Bansal, Barbieri, and
+  Fang]{maharana2024locomo}
+Adyasha Maharana, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco
+  Barbieri, and Yuwei Fang.
+\newblock Evaluating very long-term conversational memory of {LLM} agents,
+  2024.
+\newblock URL \url{https://arxiv.org/abs/2402.17753}.
+
+\bibitem[Yu et~al.(2026)Yu, Wang, Wang, Yang, and Li]{yu2026infiagent}
+Chenglin Yu, Yuchen Wang, Songmiao Wang, Hongxia Yang, and Ming Li.
+\newblock Infiagent: An infinite-horizon framework for general-purpose
+  autonomous agents, 2026.
+\newblock URL \url{https://arxiv.org/abs/2601.03204}.
+
+\bibitem[Zacks and Swallow(2007)]{zacks2007segmentation}
+Jeffrey~M. Zacks and Khena~M. Swallow.
+\newblock Event segmentation.
+\newblock \emph{Current Directions in Psychological Science}, 16\penalty0
+  (2):\penalty0 80--84, 2007.
+\newblock \doi{10.1111/j.1467-8721.2007.00480.x}.
+\newblock URL \url{https://doi.org/10.1111/j.1467-8721.2007.00480.x}.
+
+\bibitem[Zacks et~al.(2007)Zacks, Speer, Swallow, Braver, and
+  Reynolds]{zacks2007perception}
+Jeffrey~M. Zacks, Nicole~K. Speer, Khena~M. Swallow, Todd~S. Braver, and
+  Jeremy~R. Reynolds.
+\newblock Event perception: A mind-brain perspective.
+\newblock \emph{Psychological Bulletin}, 133\penalty0 (2):\penalty0 273--293,
+  2007.
+\newblock \doi{10.1037/0033-2909.133.2.273}.
+\newblock URL \url{https://doi.org/10.1037/0033-2909.133.2.273}.
+
+\end{thebibliography}
