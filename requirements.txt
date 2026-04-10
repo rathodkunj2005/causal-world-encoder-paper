@@ -1,0 +1,13 @@
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4
+matplotlib>=3.8
+pandas>=2.2
+torch>=2.2
+transformers>=4.51
+sentence-transformers>=3.0
+huggingface_hub>=0.23
+h5py>=3.11
+feedparser>=6.0
+requests>=2.31
+tqdm>=4.66
