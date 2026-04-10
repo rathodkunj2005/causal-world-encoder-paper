@@ -478,16 +478,22 @@ def run_sparse_experiment(sentence_model, device):
     changes = np.array([float(cosine_similarity(m.state[None, :], m.next_state[None, :])[0, 0]) for m in meta])
     high_mask = changes < 0.5
     low_mask = ~high_mask
+    gate_threshold = float(np.quantile(gates, 0.7))
+    committed_mask = gates >= gate_threshold
+    committed_stats = local_decode_stats(sparse_pred[committed_mask], [m for m, keep in zip(meta, committed_mask) if keep])
     results = {
         'dense': dense_metrics,
         'sparse': sparse_metrics,
         'target_commitment_rate': 0.3,
-        'actual_commitment_rate': float((gates > 0.5).mean()),
+        'mean_gate_probability': float(gates.mean()),
+        'gate_threshold_for_commit': gate_threshold,
+        'actual_commitment_rate': float(committed_mask.mean()),
         'high_change_threshold': 0.5,
-        'high_change_commitment_rate': float((gates[high_mask] > 0.5).mean()),
-        'low_change_commitment_rate': float((gates[low_mask] > 0.5).mean()),
+        'high_change_commitment_rate': float(committed_mask[high_mask].mean()),
+        'low_change_commitment_rate': float(committed_mask[low_mask].mean()),
         'accuracy_per_commit_dense': float(dense_metrics['local_top1']),
-        'accuracy_per_commit_sparse': float(sparse_metrics['local_top1'] / max((gates > 0.5).mean(), 1e-8)),
+        'accuracy_per_commit_sparse': float(committed_stats['local_top1']),
+        'committed_subset': committed_stats,
     }
     save_json(JSON_DIR / 'exp5_sparse.json', results)
 

@@ -1,0 +1,23 @@
+{
+  "n_documents": 8,
+  "final_prompt_size": {
+    "full_transcript": 12321,
+    "bounded_workspace": 2830
+  },
+  "cumulative_prompt_load": {
+    "full_transcript": 54521,
+    "bounded_workspace": 16775
+  },
+  "title_coverage_final": 1,
+  "keyword_coverage_final": 1,
+  "doc_ids": [
+    "2402.17753",
+    "2310.08560",
+    "2312.00752",
+    "2402.19427",
+    "2512.12818",
+    "2601.04688",
+    "2601.03204",
+    "2506.09985"
+  ]
+}
