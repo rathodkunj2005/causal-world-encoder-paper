@@ -32,3 +32,4 @@ How to reproduce
 Notes
 - The repo uses real data only. No mock results are included.
 - Training was run on CPU for numerical stability.
+- A fresh `.venv` install failed on this machine because the data volume ran out of free space while downloading large wheels (`torch` during `pip install -r requirements.txt`). The recorded experiments were run successfully with the already-installed system Python packages instead.
