@@ -19,16 +19,19 @@ Datasets
 
 Main finding
 - Twin-stream action/world decomposition helped held-out action generalization.
+- A focused follow-up across three additional held-out action splits kept the twin-stream advantage positive every time.
 - Bounded workspace reconstruction substantially reduced prompt load.
 - HTBS did not beat simpler sequence baselines in this implementation.
-- Sparse commitment hit the budget target and isolated a stronger committed subset, but only weakly separated high- from low-change transitions.
+- Sparse commitment hit the budget target and isolated a stronger committed subset, but it remains only a partial event-boundary detector.
 
 How to reproduce
 1. Download data:
    `bash scripts/download_data.sh`
-2. Run experiments:
+2. Run main experiments:
    `python3 experiments/run_real_experiments.py`
-3. Build the paper:
+3. Run focused TICP follow-up:
+   `python3 experiments/run_ticp_followup.py`
+4. Build the paper:
    `cd paper && /Library/TeX/texbin/pdflatex -interaction=nonstopmode main.tex && /Library/TeX/texbin/bibtex main && /Library/TeX/texbin/pdflatex -interaction=nonstopmode main.tex && /Library/TeX/texbin/pdflatex -interaction=nonstopmode main.tex`
 
 Notes

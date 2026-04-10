@@ -16,7 +16,7 @@
 
 \hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
 
-\title{Causal World Encoder: Real-Data Small-Scale Tests of Action Decomposition, Timescale Compression, and Sparse Commitment}
+\title{Intervention-Aware World Models for Agents: Real-Data Tests of the Causal World Encoder}
 \author{Kunj Rathod\\University of Utah}
 \date{}
 
@@ -24,21 +24,23 @@
 \maketitle
 
 \begin{abstract}
-This paper tests a narrow architectural claim: agent world models benefit when action effects are separated from passive dynamics, history is compressed with explicit temporal structure, and prediction updates can be made sparse. We study a proposed Causal World Encoder (CWE) with three components: a hierarchical timescale belief state (HTBS), a twin-stream intervention-conditioned predictor (TICP), and a sparse predictive commitment gate (SPCG). Unlike many architecture proposals, the paper uses only real data and reproducible small-scale experiments. On 1,986 LoCoMo questions over 5,882 dialogue memories, lexical retrieval remains strongest at Hits@5 (0.3197) and the hybrid ranker only narrowly improves Hits@10 (0.3933 vs. 0.3922), which is a useful reminder that long-horizon memory often depends on exact evidence spans. On an eight-document workflow built from live arXiv abstracts, bounded workspace reconstruction reduces cumulative prompt load by 69.23\% while preserving full title and keyword coverage. On BabyAI offline trajectories, the twin-stream predictor improves held-out-action cosine from 0.4046 to 0.4224 and local Top-1 from 0.3003 to 0.3271. The timescale experiment is less flattering to the new architecture: HTBS is competitive but not dominant, while transformer or even per-step MLP baselines often win on local decode. The sparse gate hits its target commitment rate (30.00\%) and the committed subset reaches Top-1 0.5931, but its preference for high-change steps remains limited (9.77\% gap). The overall conclusion is therefore mixed and honest: explicit action/world decomposition helps, bounded external state helps, but the present HTBS and SPCG designs do not yet justify broad claims of superiority over simpler baselines.
+This paper asks a narrower question than most world-model papers: if an agent needs to reason about interventions rather than just observations, which architectural bias actually helps at small scale on real data? We study a proposed Causal World Encoder (CWE) with three components: a hierarchical timescale belief state (HTBS), a twin-stream intervention-conditioned predictor (TICP), and a sparse predictive commitment gate (SPCG). Unlike many architectural proposals, the paper uses only public real datasets and reproducible laptop-scale experiments. On 1,986 LoCoMo questions over 5,882 dialogue memories, lexical retrieval remains strongest at Hits@5 (0.3197) and the hybrid ranker only narrowly improves Hits@10 (0.3933 vs. 0.3922), underscoring how much long-horizon memory still depends on exact evidence spans. On an eight-document workflow built from live arXiv abstracts, bounded workspace reconstruction reduces cumulative prompt load by 69.23\% while preserving complete title and keyword coverage. On BabyAI offline trajectories, TICP improves held-out-action cosine from 0.4046 to 0.4224 and local Top-1 from 0.3003 to 0.3271; a follow-up across three held-out action splits shows the same pattern each time, with held-out cosine gains of 0.0178, 0.0131, and 0.0211. The more ambitious CWE claims receive mixed support: HTBS is competitive but not dominant, and SPCG successfully budgets computation while only partially separating high-change from routine transitions. The honest conclusion is therefore selective rather than grandiose: explicit action/world decomposition is the strongest part of the proposal, bounded external state remains useful, and the current HTBS/SPCG designs need more work before they justify stronger architectural claims.
 \end{abstract}
 
 \section{Introduction}
-Language-model agents still inherit two stubborn architectural problems. First, most sequence models learn primarily from observation rather than intervention. They can compress correlations in trajectories, but they do not naturally separate what the environment would do on its own from what changed because the agent acted. Second, they typically access history either by replaying a growing prompt or by compressing everything into an opaque recurrent state. Neither extreme is satisfying for long-horizon agents that need persistent memory, bounded context, and explicit support for planning.
+The core weakness of standard sequence modeling for agents is not merely that context windows are finite. It is that most models are trained to be good at observation-conditioned prediction while agents ultimately need intervention-sensitive prediction. A next-token transformer, and even a latent predictor in the JEPA family, can be very good at estimating what tends to happen after a state. That is not the same thing as isolating what happened because the agent acted. For planning, repair, and counterfactual evaluation, that distinction matters.
 
-This paper evaluates a design hypothesis rather than a benchmark-chasing system. The proposed Causal World Encoder (CWE) combines three ideas. HTBS organizes memory into slots that update on different clocks. TICP decomposes next-state prediction into a state-only dynamics term and an action-conditioned residual. SPCG allows the model to defer costly predictive updates unless a state is worth committing. The intellectual center of gravity is TICP, because it is the only component that directly addresses the observation-versus-intervention mismatch.
+A second weakness is temporal organization. Long-horizon agent systems either replay large amounts of history through attention or compress everything into an opaque recurrent state. The former scales badly with horizon; the latter can hide exactly the distinctions the agent later needs. This motivates a structured alternative: multiscale compression for state, an explicit decomposition between passive dynamics and action-conditioned change, and a budgeted mechanism for deciding when a predictive update is worth committing.
 
-The empirical stance is deliberately conservative. Instead of claiming a general alternative to transformers or a full structural causal model, the paper asks which architectural biases survive contact with real data on a laptop. The answer is nuanced. Some ideas work. Some mostly do not. That is still useful.
+This paper evaluates that design hypothesis rather than selling a frontier-scale system. The proposed Causal World Encoder (CWE) combines three ideas. HTBS organizes memory into slots that update on different clocks. TICP decomposes next-state prediction into a state-only dynamics term and an action-conditioned residual. SPCG allows the model to defer predictive updates unless a state appears worth committing. The center of gravity is TICP, because it is the only component that directly attacks the observation-versus-intervention mismatch and, in the experiments below, it is the one that consistently survives contact with real data.
+
+The empirical stance is intentionally conservative. We do not claim a general replacement for transformers, a complete structural causal model, or large-scale embodied competence. We ask a simpler question: which architectural effects remain visible on real public datasets when the entire project must fit on a laptop and all results must be reproducible? The answer is mixed in exactly the way a useful systems paper should be mixed: bounded state helps, lexical retrieval remains surprisingly important, twin-stream action decomposition helps, and the more ambitious multiscale and sparse-gating components are promising but not yet dominant.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-    \item We formalize CWE as a modular extension of bounded-state agent architecture, separating multiscale belief compression, action-effect decomposition, and sparse predictive commitment.
-    \item We run five real-data experiments: LoCoMo retrieval, a live arXiv bounded-workspace benchmark, held-out-action generalization on BabyAI trajectories, sequence-model comparison across temporal horizons, and sparse commitment analysis.
-    \item We report a mixed result set rather than smoothing it into a marketing story: twin-stream action decomposition helps, bounded workspace helps, lexical retrieval remains surprisingly strong, and the proposed HTBS/SPCG components do not yet dominate simpler baselines.
+    \item We formalize CWE as a modular intervention-aware extension of bounded-state agent architecture, separating multiscale belief compression, action-effect decomposition, and sparse predictive commitment.
+    \item We run six real-data experiments: LoCoMo retrieval, a live arXiv bounded-workspace benchmark, a main held-out-action BabyAI experiment, a sequence-model comparison across temporal horizons, a sparse commitment analysis, and a focused TICP follow-up across three alternative held-out action splits.
+    \item We report a deliberately honest result profile: action/world decomposition is the clearest win, bounded workspace remains useful, lexical retrieval is stronger than fashionable dense baselines on LoCoMo, and the present HTBS/SPCG instantiations do not earn a superiority claim.
 \end{enumerate}
 
 \section{Problem Setting and Design Requirements}
@@ -151,6 +153,9 @@ From the same BabyAI trajectories we build sequence examples of lengths 4, 8, 12
 
 \subsection{Experiment 5: Sparse commitment versus dense prediction}
 A dense predictor always updates the next state. SPCG learns a gate probability and is evaluated with a threshold chosen to realize the target commitment rate of 30\%. We report overall prediction quality, committed-subset quality, and whether the gate prefers genuinely higher-change steps.
+
+\subsection{Experiment 6: Focused TICP follow-up across held-out action splits}
+To stress-test the strongest component of CWE, we rerun the intervention experiment across three held-out action splits rather than only one: pickup+toggle, turning, and forward+drop. In each condition, the model trains on the remaining four actions and is evaluated only on held-out actions from the test episodes. The point is not to manufacture a heroic benchmark; it is to test whether the twin-stream advantage survives when the held-out actions change.
 
 \section{Results}
 \subsection{LoCoMo retrieval}
@@ -312,12 +317,37 @@ Committed Top-1 minus dense Top-1 & 0.2567 \\
 
 SPCG reaches the target average budget almost exactly, and the committed subset attains Top-1 0.5931 versus 0.3353 for the dense baseline, a gain of 0.2567. That is the good news. The bad news is that the gate still does not cleanly separate event boundaries from routine transitions: the high-minus-low commitment-rate gap is 9.77\%. So the compute-allocation story looks real, but the stronger event-boundary interpretation remains limited.
 
+\subsection{Focused TICP follow-up}
+\begin{table}[H]
+\centering
+\caption{Twin-stream follow-up across three held-out action splits. Numbers report gains of twin-stream over single-stream on held-out actions.}
+\begin{tabular}{lcc}
+\toprule
+Held-out split & Cosine gain & Top-1 gain \\
+\midrule
+pickup+toggle & 0.0178 & 0.0268 \\
+turning & 0.0131 & 0.0076 \\
+forward+drop & 0.0211 & 0.0245 \\
+\bottomrule
+\end{tabular}
+\label{tab:ticp-followup}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\linewidth]{../results/figures/exp6_ticp_followup.png}
+\caption{Twin-stream follow-up across three held-out action splits. The improvement is modest but consistently positive.}
+\label{fig:ticp-followup}
+\end{figure}
+
+The follow-up experiment is important because it checks whether the main TICP result was a lucky split. It was not. Across all three held-out partitions, the twin-stream model improves held-out cosine and held-out Top-1 over the single-stream baseline. The gains are not dramatic, but they are consistent: +0.0178/+0.0268 for pickup+toggle, +0.0131/+0.0076 for turning, and +0.0211/+0.0245 for forward+drop. That consistency strengthens the paper's strongest claim more than any further rhetorical polishing could.
+
 \section{Discussion}
 The experiments support three different conclusions of three different strengths.
 
 First, bounded external state is a clear win. The retrieval and workspace experiments both reinforce the original systems argument that long-horizon agents should not rely on transcript growth alone. The retrieval result is especially instructive because it is slightly inconvenient: lexical matching remains the strongest shallow retriever on LoCoMo. That makes the paper more credible, not less.
 
-Second, explicit action/world decomposition helps. The held-out-action BabyAI experiment is not a giant effect, but it is the most coherent positive finding in the repo. It justifies taking TICP seriously as the core novel component.
+Second, explicit action/world decomposition helps. The held-out-action BabyAI experiment is not a giant effect, but it is the most coherent positive finding in the repo. More importantly, the follow-up across three alternate held-out action splits keeps the sign of the result positive every time. That does not prove causal reasoning in the full Pearlian sense, but it does justify taking TICP seriously as the core novel component.
 
 Third, the other two CWE components need more work. HTBS is plausible and sometimes competitive, but the baselines do not collapse as sequence length increases. SPCG can budget computation and isolate a high-accuracy committed subset, yet it does not cleanly learn prediction-error boundaries. In other words, there is a paper here, but not the triumphant version.
 

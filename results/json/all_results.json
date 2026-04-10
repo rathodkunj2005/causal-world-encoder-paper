@@ -248,5 +248,118 @@
       "local_top1": 0.59312606959498,
       "local_top5": 0.9411009697661152
     }
+  },
+  "exp6_ticp_followup": {
+    "pickup_toggle": {
+      "seen_actions": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "held_out_actions": [
+        3,
+        5
+      ],
+      "train_n": 11162,
+      "test_seen_n": 19573,
+      "test_held_n": 3800,
+      "single_stream_seen": {
+        "cosine": 0.5398724263017495,
+        "local_top1": 0.34103101210851683,
+        "local_top5": 0.6125785520870587
+      },
+      "single_stream_held_out": {
+        "cosine": 0.40459389708274485,
+        "local_top1": 0.30026315789473684,
+        "local_top5": 1.0
+      },
+      "twin_stream_seen": {
+        "cosine": 0.552986241666481,
+        "local_top1": 0.32432432432432434,
+        "local_top5": 0.5987329484493946
+      },
+      "twin_stream_held_out": {
+        "cosine": 0.4223712512321378,
+        "local_top1": 0.32710526315789473,
+        "local_top5": 1.0
+      },
+      "heldout_cosine_gain": 0.017777354149392965,
+      "heldout_top1_gain": 0.02684210526315789
+    },
+    "turning": {
+      "seen_actions": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "held_out_actions": [
+        0,
+        1
+      ],
+      "train_n": 8000,
+      "test_seen_n": 14176,
+      "test_held_n": 9197,
+      "single_stream_seen": {
+        "cosine": 0.5986416322714176,
+        "local_top1": 0.4089305869074492,
+        "local_top5": 0.7382195259593679
+      },
+      "single_stream_held_out": {
+        "cosine": 0.40270977250310575,
+        "local_top1": 0.16483635968250515,
+        "local_top5": 0.6758725671414592
+      },
+      "twin_stream_seen": {
+        "cosine": 0.5942400700841561,
+        "local_top1": 0.4123165914221219,
+        "local_top5": 0.6969525959367946
+      },
+      "twin_stream_held_out": {
+        "cosine": 0.415859557207436,
+        "local_top1": 0.17244753724040449,
+        "local_top5": 0.6740241383059693
+      },
+      "heldout_cosine_gain": 0.013149784704330258,
+      "heldout_top1_gain": 0.007611177557899335
+    },
+    "forward_drop": {
+      "seen_actions": [
+        0,
+        1,
+        3,
+        5
+      ],
+      "held_out_actions": [
+        2,
+        4
+      ],
+      "train_n": 9562,
+      "test_seen_n": 12997,
+      "test_held_n": 10376,
+      "single_stream_seen": {
+        "cosine": 0.5384690493537014,
+        "local_top1": 0.4117873355389705,
+        "local_top5": 0.7433253827806416
+      },
+      "single_stream_held_out": {
+        "cosine": 0.38094649151105464,
+        "local_top1": 0.1280840400925212,
+        "local_top5": 0.5332498072474943
+      },
+      "twin_stream_seen": {
+        "cosine": 0.5436829796522102,
+        "local_top1": 0.38708932830653225,
+        "local_top5": 0.7215511271831961
+      },
+      "twin_stream_held_out": {
+        "cosine": 0.40199909863222333,
+        "local_top1": 0.15256360832690824,
+        "local_top5": 0.5399961449498843
+      },
+      "heldout_cosine_gain": 0.021052607121168687,
+      "heldout_top1_gain": 0.024479568234387045
+    }
   }
 }
