@@ -1,26 +1,31 @@
 {
   "dense": {
-    "cosine": 0.5466162258562222,
-    "local_top1": 0.336456595216703,
-    "local_top5": 0.5696744106447611
+    "cosine": 0.993681638931663,
+    "local_top1": 0.9997351344192822,
+    "local_top5": 1.0
   },
   "sparse": {
-    "cosine": 0.6144971262641449,
-    "local_top1": 0.35327086809566594,
-    "local_top5": 0.7253240919009113
+    "cosine": 0.9926998674782708,
+    "local_top1": 0.9996027016289233,
+    "local_top5": 1.0
   },
   "target_commitment_rate": 0.3,
-  "mean_gate_probability": 0.291559636592865,
-  "gate_threshold_for_commit": 0.308206582069397,
-  "actual_commitment_rate": 0.30000427844093613,
+  "mean_gate_probability": 0.3001696765422821,
+  "gate_threshold_for_commit": 0.3117178976535797,
+  "actual_commitment_rate": 0.30009270295325124,
   "high_change_threshold": 0.5,
-  "high_change_commitment_rate": 0.3599247621155123,
-  "low_change_commitment_rate": 0.2622253226369027,
-  "accuracy_per_commit_dense": 0.336456595216703,
-  "accuracy_per_commit_sparse": 0.59312606959498,
+  "high_change_commitment_rate": 0.301744782757441,
+  "low_change_commitment_rate": 0.2990492653414002,
+  "accuracy_per_commit_dense": 0.999558693733451,
+  "accuracy_per_commit_sparse": 0.999117387466902,
   "committed_subset": {
-    "cosine": 0.6272222203453838,
-    "local_top1": 0.59312606959498,
-    "local_top5": 0.9411009697661152
+    "cosine": 0.9888645279018203,
+    "local_top1": 0.999117387466902,
+    "local_top5": 1.0
+  },
+  "dense_committed_subset": {
+    "cosine": 0.9909791254355438,
+    "local_top1": 0.999558693733451,
+    "local_top5": 1.0
   }
 }

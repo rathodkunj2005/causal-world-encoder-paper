@@ -24,7 +24,7 @@
 \maketitle
 
 \begin{abstract}
-This paper asks a narrower question than most world-model papers: if an agent needs to reason about interventions rather than just observations, which architectural bias actually helps at small scale on real data? We study a proposed Causal World Encoder (CWE) with three components: a hierarchical timescale belief state (HTBS), a twin-stream intervention-conditioned predictor (TICP), and a sparse predictive commitment gate (SPCG). Unlike many architectural proposals, the paper uses only public real datasets and reproducible laptop-scale experiments. On 1,986 LoCoMo questions over 5,882 dialogue memories, lexical retrieval remains strongest at Hits@5 (0.3197) and the hybrid ranker only narrowly improves Hits@10 (0.3933 vs. 0.3922), underscoring how much long-horizon memory still depends on exact evidence spans. On an eight-document workflow built from live arXiv abstracts, bounded workspace reconstruction reduces cumulative prompt load by 69.23\% while preserving complete title and keyword coverage. On BabyAI offline trajectories, TICP improves held-out-action cosine from 0.4046 to 0.4224 and local Top-1 from 0.3003 to 0.3271; a follow-up across three held-out action splits shows the same pattern each time, with held-out cosine gains of 0.0178, 0.0131, and 0.0211. The more ambitious CWE claims receive mixed support: HTBS is competitive but not dominant, and SPCG successfully budgets computation while only partially separating high-change from routine transitions. The honest conclusion is therefore selective rather than grandiose: explicit action/world decomposition is the strongest part of the proposal, bounded external state remains useful, and the current HTBS/SPCG designs need more work before they justify stronger architectural claims.
+This paper asks a narrower question than most world-model papers: if an agent needs to reason about interventions rather than just observations, which architectural bias actually helps at small scale on real data? We study a proposed Causal World Encoder (CWE) with three components: a hierarchical timescale belief state (HTBS), a twin-stream intervention-conditioned predictor (TICP), and a sparse predictive commitment gate (SPCG). Unlike many architectural proposals, the paper uses only public real datasets and reproducible laptop-scale experiments with a dataset-stratified 80/20 train/test episode split. On 1,986 LoCoMo questions over 5,882 dialogue memories, lexical retrieval remains strongest at Hits@5 (0.3197) and the hybrid ranker only narrowly improves Hits@10 (0.3933 vs.\ 0.3922), underscoring how much long-horizon memory still depends on exact evidence spans. On an eight-document workflow built from live arXiv abstracts, bounded workspace reconstruction reduces cumulative prompt load by 69.23\% while preserving complete title coverage. On BabyAI offline trajectories with a stratified split across both environments, TICP improves held-out-action cosine from 0.6186 to 0.6493 ($+$0.0307) and local Top-1 from 0.5271 to 0.6171 ($+$0.0900). A follow-up across three held-out action splits reveals that the twin-stream advantage is action-type dependent: strong for manipulation actions (pickup\,+\,toggle: $+$0.031 cosine, $+$0.090 Top-1), negligible for turning ($+$0.001, $+$0.004), and negative for movement-dominant actions (forward\,+\,drop: $-$0.032 cosine, $-$0.024 Top-1). With adequate training data all timescale models (HTBS, LSTM, Transformer, MLP) saturate near-perfect local Top-1, making the Top-1 metric uninformative; cosine similarity still ranks MLP control above HTBS at every sequence length, leaving no superiority claim for multiscale compression. SPCG hits its budget target almost exactly (mean gate 0.3002) but shows virtually no event-boundary discrimination: the high-change versus low-change commitment rate gap is 0.27\%, and the sparse model performs slightly worse on its own committed subset than the dense baseline does on the same subset. The honest conclusion is that action/world decomposition is the strongest part of the proposal but is itself conditional on action type, bounded external state remains useful, and the current HTBS and SPCG designs need more work before they justify stronger architectural claims.
 \end{abstract}
 
 \section{Introduction}
@@ -32,15 +32,15 @@ The core weakness of standard sequence modeling for agents is not merely that co
 
 A second weakness is temporal organization. Long-horizon agent systems either replay large amounts of history through attention or compress everything into an opaque recurrent state. The former scales badly with horizon; the latter can hide exactly the distinctions the agent later needs. This motivates a structured alternative: multiscale compression for state, an explicit decomposition between passive dynamics and action-conditioned change, and a budgeted mechanism for deciding when a predictive update is worth committing.
 
-This paper evaluates that design hypothesis rather than selling a frontier-scale system. The proposed Causal World Encoder (CWE) combines three ideas. HTBS organizes memory into slots that update on different clocks. TICP decomposes next-state prediction into a state-only dynamics term and an action-conditioned residual. SPCG allows the model to defer predictive updates unless a state appears worth committing. The center of gravity is TICP, because it is the only component that directly attacks the observation-versus-intervention mismatch and, in the experiments below, it is the one that consistently survives contact with real data.
+This paper evaluates that design hypothesis rather than selling a frontier-scale system. The proposed Causal World Encoder (CWE) combines three ideas. HTBS organizes memory into slots that update on different clocks. TICP factorizes next-state prediction into a state-only dynamics term and an action-conditioned residual. SPCG allows the model to defer predictive updates unless a state appears worth committing. The center of gravity is TICP, because it is the only component that directly attacks the observation-versus-intervention mismatch. The experiments below show that TICP's benefit is real but action-type dependent: it helps substantially for object-manipulation actions and is neutral or negative for movement-dominant actions.
 
-The empirical stance is intentionally conservative. We do not claim a general replacement for transformers, a complete structural causal model, or large-scale embodied competence. We ask a simpler question: which architectural effects remain visible on real public datasets when the entire project must fit on a laptop and all results must be reproducible? The answer is mixed in exactly the way a useful systems paper should be mixed: bounded state helps, lexical retrieval remains surprisingly important, twin-stream action decomposition helps, and the more ambitious multiscale and sparse-gating components are promising but not yet dominant.
+The empirical stance is intentionally conservative. We do not claim a general replacement for transformers, a complete structural causal model, or large-scale embodied competence. We ask a simpler question: which architectural effects remain visible on real public datasets when the entire project must fit on a laptop and all results must be reproducible? The answer is mixed in exactly the way a useful systems paper should be mixed: bounded state helps, lexical retrieval remains surprisingly important, twin-stream action decomposition helps for manipulation-type actions but not uniformly, and the more ambitious multiscale and sparse-gating components are not yet competitive.
 
 \paragraph{Contributions.}
 \begin{enumerate}
     \item We formalize CWE as a modular intervention-aware extension of bounded-state agent architecture, separating multiscale belief compression, action-effect decomposition, and sparse predictive commitment.
-    \item We run six real-data experiments: LoCoMo retrieval, a live arXiv bounded-workspace benchmark, a main held-out-action BabyAI experiment, a sequence-model comparison across temporal horizons, a sparse commitment analysis, and a focused TICP follow-up across three alternative held-out action splits.
-    \item We report a deliberately honest result profile: action/world decomposition is the clearest win, bounded workspace remains useful, lexical retrieval is stronger than fashionable dense baselines on LoCoMo, and the present HTBS/SPCG instantiations do not earn a superiority claim.
+    \item We run six real-data experiments with a corrected dataset-stratified train/test split: LoCoMo retrieval, a live arXiv bounded-workspace benchmark, a main held-out-action BabyAI experiment, a sequence-model comparison across temporal horizons, a sparse commitment analysis with a fair committed-subset comparison, and a focused TICP follow-up across three alternative held-out action splits with per-split seed control.
+    \item We report a deliberately honest result profile: action/world decomposition is the clearest win but only for manipulation actions, bounded workspace remains useful, lexical retrieval is stronger than dense baselines on LoCoMo, HTBS does not beat simpler baselines in cosine similarity, and SPCG shows essentially no event-boundary discrimination.
 \end{enumerate}
 
 \section{Problem Setting and Design Requirements}
@@ -94,7 +94,7 @@ HTBS keeps $K$ slots with update periods $2^0,2^1,\ldots,2^{K-1}$. Slot $k$ upda
  s_k(t-1), & \text{otherwise.}
  \end{cases}
 \]
-The final belief state is the concatenation of slot states. This gives structured temporal compression, but the results below show that structured compression alone does not guarantee better next-state decoding.
+The final belief state is the concatenation of slot states. This gives structured temporal compression, but the results below show that structured compression alone does not guarantee better next-state prediction.
 
 \subsection{Twin-Stream Intervention-Conditioned Predictor}
 TICP factorizes prediction into a state-only term and an action-conditioned residual:
@@ -108,7 +108,7 @@ SPCG predicts both a next-state proposal and a gate probability $g_t \in [0,1]$.
 \[
  \hat s_{t+1} = g_t \, f(s_t, a_t) + (1-g_t) s_t.
 \]
-A budget penalty keeps the mean gate probability near a target rate. The attractive cognitive-science story comes from active inference and event segmentation \citep{friston2017active, zacks2007perception, zacks2007segmentation}, but the experiment below shows only weak evidence for clean event-boundary specialization.
+A budget penalty keeps the mean gate probability near a target rate. The attractive cognitive-science story comes from active inference and event segmentation \citep{friston2017active, zacks2007perception, zacks2007segmentation}, but the experiment below shows that the gate does not learn to discriminate event boundaries in practice.
 
 \begin{figure}[t]
 \centering
@@ -139,23 +139,26 @@ A budget penalty keeps the mean gate probability near a target rate. The attract
 \section{Experiments}
 All experiments use real public data. Retrieval uses the released LoCoMo text benchmark. The bounded-workspace test fetches eight live arXiv abstracts. The intervention, timescale, and sparse-commitment experiments use offline BabyAI trajectories from public Minari mirrors on Hugging Face. Training ran on CPU for numerical stability and reproducibility.
 
+\paragraph{Data split.}
+All BabyAI experiments use episodes from two environments: BabyAI-KeyCorridorS3R1 and BabyAI-UnlockPickup (1,000 episodes each). Episodes are split 80/20 \emph{within each environment} using a fixed random seed, producing stratified train and test sets that include transitions from both environments. This avoids the confound of training exclusively on one environment while testing on another.
+
 \subsection{Experiment 1: Conversational retrieval on LoCoMo}
 We flatten the LoCoMo release into 5,882 dialogue-turn memories and 1,986 question/evidence pairs. We compare TF--IDF, dense MiniLM retrieval, and reciprocal-rank-fusion hybrid retrieval. Metrics are Hits@1, Hits@5, Hits@10, MRR, and nDCG@10.
 
 \subsection{Experiment 2: Bounded-workspace reconstruction on live abstracts}
-We fetch eight real arXiv abstracts spanning agent memory, sequence modeling, and world models. At each step the system records a structured note with title, claim sentence, and extracted keywords. We compare a full-transcript prompt to a bounded workspace reconstructed from notes plus the two most recent actions. The metric is prompt size and cumulative prompt load, with exact title and keyword coverage as a fidelity check.
+We fetch eight real arXiv abstracts spanning agent memory, sequence modeling, and world models. At each step the system records a structured note with title, claim sentence, and extracted keywords. We compare a full-transcript prompt to a bounded workspace reconstructed from notes plus the two most recent actions. The metric is prompt size and cumulative prompt load, with exact title coverage as a fidelity check. Note that keyword coverage reaches 1.0 by construction---keywords are extracted from each abstract and written verbatim into the workspace---so keyword coverage measures write fidelity, not retrieval selectivity.
 
 \subsection{Experiment 3: Intervention decomposition on BabyAI trajectories}
-We use offline trajectories from BabyAI-KeyCorridorS3R1 and BabyAI-UnlockPickup. Actions $\{0,1,2,4\}$ (left, right, forward, drop) are used for training; pickup and toggle ($\{3,5\}$) are held out. Action representations are MiniLM sentence embeddings of action names so that zero-shot transfer has at least a semantic route. We compare a single-stream MLP against TICP on cosine similarity and local nearest-neighbor decoding.
+We use offline trajectories from BabyAI-KeyCorridorS3R1 and BabyAI-UnlockPickup. Actions $\{0,1,2,4\}$ (left, right, forward, drop) are used for training; pickup and toggle ($\{3,5\}$) are held out. Action representations are MiniLM sentence embeddings of action names so that zero-shot transfer has at least a semantic route. We compare a single-stream MLP against TICP on cosine similarity and local nearest-neighbor decoding across both seen and held-out actions.
 
 \subsection{Experiment 4: Timescale factorization versus flat alternatives}
-From the same BabyAI trajectories we build sequence examples of lengths 4, 8, 12, and 16. Each timestep concatenates the current state feature vector with an action embedding; the target is the next state feature vector. We compare HTBS, an LSTM, a 2-layer causal transformer, and a per-step MLP control.
+From the same BabyAI trajectories we build sequence examples of lengths 4, 8, 12, and 16. Each timestep concatenates the current state feature vector with an action embedding; the target is the next state feature vector. We compare HTBS, an LSTM, a 2-layer causal transformer, and a per-step MLP control. Because local Top-1 saturates near 1.0 with the stratified split, we report cosine similarity as the primary discriminating metric.
 
 \subsection{Experiment 5: Sparse commitment versus dense prediction}
-A dense predictor always updates the next state. SPCG learns a gate probability and is evaluated with a threshold chosen to realize the target commitment rate of 30\%. We report overall prediction quality, committed-subset quality, and whether the gate prefers genuinely higher-change steps.
+A dense predictor always updates the next state. SPCG learns a gate probability and is evaluated with a threshold chosen to realize the target commitment rate of 30\%. To enable a fair comparison, we evaluate the dense predictor on the same committed subset selected by the sparse gate (not on the full test set), thereby removing the selection advantage.
 
 \subsection{Experiment 6: Focused TICP follow-up across held-out action splits}
-To stress-test the strongest component of CWE, we rerun the intervention experiment across three held-out action splits rather than only one: pickup+toggle, turning, and forward+drop. In each condition, the model trains on the remaining four actions and is evaluated only on held-out actions from the test episodes. The point is not to manufacture a heroic benchmark; it is to test whether the twin-stream advantage survives when the held-out actions change.
+To stress-test the strongest component of CWE, we rerun the intervention experiment across three held-out action splits: pickup+toggle, turning, and forward+drop. In each condition the model trains on the remaining four actions and is evaluated only on held-out actions from the test episodes. The random seed is reset to the same value before training each split, so all three splits see identical initialization conditions.
 
 \section{Results}
 \subsection{LoCoMo retrieval}
@@ -194,11 +197,12 @@ Metric & Full transcript & Bounded workspace \\
 Final prompt size (chars) & 12321 & 2830 \\
 Cumulative prompt load (chars) & 54521 & 16775 \\
 Title coverage & 1 & 1 \\
-Keyword coverage & 1 & 1 \\
+Keyword coverage$^*$ & 1 & 1 \\
 \bottomrule
 \end{tabular}
 \label{tab:workspace}
 \end{table}
+{\small $^*$Keyword coverage is 1 by construction: keywords are extracted from each abstract and stored verbatim in the workspace note.}
 
 \begin{figure}[H]
 \centering
@@ -207,18 +211,18 @@ Keyword coverage & 1 & 1 \\
 \label{fig:workspace}
 \end{figure}
 
-Bounded workspace reconstruction cuts final prompt size by 77.03\% and cumulative prompt load by 69.23\% while preserving exact title and keyword coverage. This is not a full interactive agent benchmark, but it is a clean real-data confirmation that externalized workspace state changes scaling behavior materially.
+Bounded workspace reconstruction cuts final prompt size by 77.03\% and cumulative prompt load by 69.23\% while preserving exact title coverage. This is not a full interactive agent benchmark, but it is a clean real-data confirmation that externalized workspace state changes scaling behavior materially.
 
 \subsection{Intervention decomposition}
 \begin{table}[H]
 \centering
-\caption{Held-out-action generalization on BabyAI offline trajectories.}
-\begin{tabular}{lcccc}
+\caption{Held-out-action generalization on BabyAI offline trajectories (stratified split, 24,584 train / 7,551 test transitions).}
+\begin{tabular}{lccccc}
 \toprule
-Model & Seen cosine & Held-out cosine & Held-out Top-1 & Held-out Top-5 \\
+Model & Seen cosine & Seen Top-1 & Held-out cosine & Held-out Top-1 & Held-out Top-5 \\
 \midrule
-Single-stream & 0.5399 & 0.4046 & 0.3003 & 1.0000 \\
-Twin-stream & 0.5530 & 0.4224 & 0.3271 & 1.0000 \\
+Single-stream & 0.9939 & 0.9997 & 0.6186 & 0.5271 & 1.0000 \\
+Twin-stream & 0.9943 & 0.9993 & 0.6493 & 0.6171 & 1.0000 \\
 \bottomrule
 \end{tabular}
 \label{tab:intervention}
@@ -227,65 +231,50 @@ Twin-stream & 0.5530 & 0.4224 & 0.3271 & 1.0000 \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\linewidth]{../results/figures/exp3_intervention.png}
-\caption{Twin-stream decomposition improves held-out-action cosine and local Top-1, although the gain is modest.}
+\caption{Twin-stream decomposition improves held-out-action cosine and local Top-1 substantially.}
 \label{fig:intervention}
 \end{figure}
 
-This is the cleanest positive result for CWE. On held-out actions, the twin-stream model improves cosine by 0.0178 and local Top-1 by 0.0268. The effect is not huge, but it is consistent with the core thesis that separating state-only dynamics from action-conditioned deltas is a better inductive bias than a single undifferentiated predictor.
+This is the strongest positive result for CWE. On held-out actions, the twin-stream model improves cosine by 0.0307 and local Top-1 by 0.0900. Both models nearly saturate on seen actions (cosine $>$0.99, Top-1 $>$0.999), confirming that the gap appears specifically on unseen action types. The Seen Top-1 column shows that twin-stream slightly underperforms single-stream on seen actions (0.9993 vs.\ 0.9997), indicating that the twin-stream inductive bias trades a marginal reduction on interpolation for a substantial gain on extrapolation to novel action types.
 
 \subsection{Timescale factorization}
 \begin{table}[H]
 \centering
-\caption{Sequence-model comparison across episode lengths.}
+\caption{Cosine similarity across sequence lengths. Top-1 saturates near 1.0 for all models with the stratified split and is not the primary discriminating metric.}
 \begin{tabular}{lcccc}
 \toprule
-Length & Best model (Top-1) & Best Top-1 & Best Top-5 & Best train seconds \\
+Length & HTBS cosine & LSTM cosine & Transformer cosine & MLP cosine \\
 \midrule
-4 & MLP control & 0.3327 & 0.6041 & 2.15 \\
-8 & Transformer & 0.3478 & 0.6500 & 27.39 \\
-12 & MLP control & 0.3542 & 0.7205 & 1.11 \\
-16 & Transformer & 0.4369 & 0.8702 & 12.08 \\
+4 & 0.9880 & 0.9896 & 0.9916 & \textbf{0.9933} \\
+8 & 0.9871 & 0.9865 & 0.9907 & \textbf{0.9925} \\
+12 & 0.9861 & 0.9849 & 0.9898 & \textbf{0.9909} \\
+16 & 0.9814 & 0.9798 & 0.9873 & \textbf{0.9888} \\
 \bottomrule
 \end{tabular}
-\label{tab:timescale-summary}
-\end{table}
-
-\begin{table}[H]
-\centering
-\caption{HTBS versus transformer on local Top-1.}
-\begin{tabular}{lcc}
-\toprule
-Length & HTBS Top-1 & Transformer Top-1 \\
-\midrule
-4 & 0.2742 & 0.3151 \\
-8 & 0.3115 & 0.3478 \\
-12 & 0.2844 & 0.3392 \\
-16 & 0.3303 & 0.4369 \\
-\bottomrule
-\end{tabular}
-\label{tab:timescale-htbs}
+\label{tab:timescale-cosine}
 \end{table}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\linewidth]{../results/figures/exp4_timescale.png}
-\caption{Local Top-1 accuracy across sequence lengths. HTBS is competitive at longer horizons but does not dominate.}
+\caption{Cosine similarity across sequence lengths. All models degrade with length; MLP control consistently leads.}
 \label{fig:timescale}
 \end{figure}
 
-This is the most sobering result in the paper. HTBS never clearly wins the experiment. At length 16 it reaches Top-1 0.3303, but the transformer still does better at 0.4369. Even the per-step MLP is hard to beat at shorter horizons. The right conclusion is not that multiscale compression is useless; it is that the present HTBS design does not yet earn a superiority claim.
+With the stratified split providing adequate training coverage of both environments, local Top-1 saturates near 1.0 for all models at every length. Cosine similarity is the informative metric. The MLP control consistently ranks first, and HTBS consistently ranks last. This is a sobering result for multiscale compression: the simplest architecture, which only uses the final timestep, outperforms the explicitly hierarchical one at every horizon tested. The right interpretation is not that multiscale compression is useless in principle; it is that the present HTBS design does not earn a superiority claim on this task.
 
 \subsection{Sparse commitment}
 \begin{table}[H]
 \centering
-\caption{Dense versus sparse predictive commitment.}
-\begin{tabular}{lccc}
+\caption{Dense versus sparse predictive commitment. The ``committed subset'' columns evaluate each predictor on the 30\% of test transitions where the sparse gate fires, enabling a fair same-subset comparison.}
+\begin{tabular}{lcccc}
 \toprule
-Model / subset & Cosine & Local Top-1 & Local Top-5 \\
+Model / evaluation set & Cosine & Local Top-1 & Local Top-5 \\
 \midrule
-Dense predictor & 0.5443 & 0.3353 & 0.5728 \\
-Sparse blended output & 0.6145 & 0.3533 & 0.7253 \\
-Sparse committed subset & 0.6272 & 0.5931 & 0.9411 \\
+Dense predictor (full test) & 0.9937 & 0.9997 & 1.0000 \\
+Sparse blended output (full test) & 0.9927 & 0.9996 & 1.0000 \\
+Dense predictor (committed subset) & 0.9910 & 0.9996 & 1.0000 \\
+Sparse committed subset & 0.9889 & 0.9991 & 1.0000 \\
 \bottomrule
 \end{tabular}
 \label{tab:sparse}
@@ -298,11 +287,11 @@ Sparse committed subset & 0.6272 & 0.5931 & 0.9411 \\
 \toprule
 Statistic & Value \\
 \midrule
-Mean gate probability & 0.2916 \\
-Actual commitment rate & 0.3000 \\
-High-change commitment rate & 0.3599 \\
-Low-change commitment rate & 0.2622 \\
-Committed Top-1 minus dense Top-1 & 0.2567 \\
+Mean gate probability & 0.3002 \\
+Actual commitment rate & 0.3001 \\
+High-change commitment rate & 0.3017 \\
+Low-change commitment rate & 0.2990 \\
+High-minus-low gap & 0.0027 \\
 \bottomrule
 \end{tabular}
 \label{tab:sparse-gate}
@@ -311,23 +300,23 @@ Committed Top-1 minus dense Top-1 & 0.2567 \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.72\linewidth]{../results/figures/exp5_sparse.png}
-\caption{Commitment rates for the sparse gate.}
+\caption{Commitment rates for the sparse gate. High-change and low-change rates are nearly identical, indicating the gate does not learn event-boundary specialization.}
 \label{fig:sparse}
 \end{figure}
 
-SPCG reaches the target average budget almost exactly, and the committed subset attains Top-1 0.5931 versus 0.3353 for the dense baseline, a gain of 0.2567. That is the good news. The bad news is that the gate still does not cleanly separate event boundaries from routine transitions: the high-minus-low commitment-rate gap is 9.77\%. So the compute-allocation story looks real, but the stronger event-boundary interpretation remains limited.
+SPCG reaches the target budget almost exactly (0.3001 actual vs.\ 0.3000 target). However, the gate shows virtually no event-boundary discrimination: the high-change versus low-change commitment rate gap is only 0.27\%. More critically, when the dense predictor is evaluated on the same committed subset (the 30\% of transitions where the sparse gate fires), it matches or exceeds the sparse model on every metric. The compute-allocation story is real---the gate does learn to fire at its target rate---but the stronger event-boundary interpretation is unsupported.
 
 \subsection{Focused TICP follow-up}
 \begin{table}[H]
 \centering
-\caption{Twin-stream follow-up across three held-out action splits. Numbers report gains of twin-stream over single-stream on held-out actions.}
-\begin{tabular}{lcc}
+\caption{Twin-stream follow-up across three held-out action splits (stratified split, per-split seed control). Gains are twin-stream minus single-stream on held-out actions.}
+\begin{tabular}{lccc}
 \toprule
-Held-out split & Cosine gain & Top-1 gain \\
+Held-out split & Train $n$ & Cosine gain & Top-1 gain \\
 \midrule
-pickup+toggle & 0.0178 & 0.0268 \\
-turning & 0.0131 & 0.0076 \\
-forward+drop & 0.0211 & 0.0245 \\
+pickup+toggle & 24,584 & $+$0.0307 & $+$0.0900 \\
+turning & 17,749 & $+$0.0011 & $+$0.0045 \\
+forward+drop & 18,035 & $-$0.0316 & $-$0.0238 \\
 \bottomrule
 \end{tabular}
 \label{tab:ticp-followup}
@@ -336,33 +325,34 @@ forward+drop & 0.0211 & 0.0245 \\
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.82\linewidth]{../results/figures/exp6_ticp_followup.png}
-\caption{Twin-stream follow-up across three held-out action splits. The improvement is modest but consistently positive.}
+\caption{Twin-stream follow-up across three held-out action splits. The improvement is large for manipulation actions, negligible for turning, and negative for movement actions.}
 \label{fig:ticp-followup}
 \end{figure}
 
-The follow-up experiment is important because it checks whether the main TICP result was a lucky split. It was not. Across all three held-out partitions, the twin-stream model improves held-out cosine and held-out Top-1 over the single-stream baseline. The gains are not dramatic, but they are consistent: +0.0178/+0.0268 for pickup+toggle, +0.0131/+0.0076 for turning, and +0.0211/+0.0245 for forward+drop. That consistency strengthens the paper's strongest claim more than any further rhetorical polishing could.
+The follow-up experiment substantially qualifies the main TICP result. Across held-out action splits with per-split seed control, the twin-stream model helps strongly for pickup+toggle ($+$0.031 cosine, $+$0.090 Top-1) but is negligible for turning ($+$0.001, $+$0.004) and harmful for forward+drop ($-$0.032, $-$0.024). The interpretation is informative: manipulation actions (pickup, toggle) require isolating a distinct physical effect that depends entirely on the agent's action, making the factorized inductive bias useful. Movement-dominant actions (forward, drop) are more tightly coupled to the agent's current state and direction, so separating the action stream may introduce unnecessary interference. This action-type dependency was invisible in the original single-split result and represents the most important finding of the follow-up.
 
 \section{Discussion}
-The experiments support three different conclusions of three different strengths.
+The corrected experiments support three revised conclusions.
 
-First, bounded external state is a clear win. The retrieval and workspace experiments both reinforce the original systems argument that long-horizon agents should not rely on transcript growth alone. The retrieval result is especially instructive because it is slightly inconvenient: lexical matching remains the strongest shallow retriever on LoCoMo. That makes the paper more credible, not less.
+First, bounded external state is a clear win. The retrieval and workspace experiments both reinforce the original systems argument. The retrieval result is instructive because it is slightly inconvenient: lexical matching remains the strongest shallow retriever on LoCoMo, and hybrid fusion only barely improves at Hits@10.
 
-Second, explicit action/world decomposition helps. The held-out-action BabyAI experiment is not a giant effect, but it is the most coherent positive finding in the repo. More importantly, the follow-up across three alternate held-out action splits keeps the sign of the result positive every time. That does not prove causal reasoning in the full Pearlian sense, but it does justify taking TICP seriously as the core novel component.
+Second, explicit action/world decomposition helps, but specifically for manipulation-type actions. The intervention result is stronger under the corrected stratified split (Top-1 gain $+$0.090 vs.\ $+$0.027 with the flawed original split), but the follow-up reveals that this gain is concentrated in pickup+toggle. For movement-dominant actions the twin stream is neutral to harmful. This is scientifically more informative than a uniformly positive result: it identifies the conditions under which the inductive bias is well-matched.
 
-Third, the other two CWE components need more work. HTBS is plausible and sometimes competitive, but the baselines do not collapse as sequence length increases. SPCG can budget computation and isolate a high-accuracy committed subset, yet it does not cleanly learn prediction-error boundaries. In other words, there is a paper here, but not the triumphant version.
+Third, the other two CWE components need substantially more work. HTBS is consistently ranked last by cosine similarity even when the task has abundant training data. SPCG hits its budget target but shows essentially no event-boundary selectivity (gap 0.27\%), and is slightly outperformed by the dense predictor on its own committed subset.
 
 \section{Limitations}
 This project has several obvious limitations.
 \begin{itemize}
     \item The intervention results come from small offline BabyAI trajectories, not from a large embodied agent stack.
-    \item The action generalization setup relies on text embeddings of action names. That is a reasonable semantic prior, but it is still a design choice rather than a law of nature.
+    \item The action generalization setup relies on text embeddings of action names. That is a reasonable semantic prior, but it is a design choice rather than a law of nature.
     \item HTBS was tested only in one concrete implementation with GRU cells and mean pooling. A stronger multiscale design might perform differently.
-    \item The sparse gate was evaluated with a threshold chosen to match the target commitment rate; this makes budget control explicit, but it also means the evaluation is not a pure emergent-boundary story.
+    \item The sparse gate was evaluated with a threshold chosen to match the target commitment rate; budget control is explicit, but the evaluation is not a pure emergent-boundary story.
+    \item No error bars or statistical significance tests are reported. The TICP gains for turning and forward+drop are small enough that significance is unclear. Multiple seeds would strengthen the claim.
     \item The paper does not claim a full causal model in Pearl's formal sense. CWE is better described as an intervention-aware predictive architecture.
 \end{itemize}
 
 \section{Conclusion}
-CWE is not a wholesale replacement for transformers, and this paper does not pretend otherwise. The honest result is narrower: action-effect factorization is useful, bounded state reconstruction is useful, and the specific multiscale and sparse-gating mechanisms tested here are promising but not yet decisive. That is still enough for a solid systems paper, because it turns a vague architectural intuition into a reproducible set of wins, failures, and next steps.
+CWE is not a wholesale replacement for transformers, and this paper does not pretend otherwise. The corrected result is narrower than the original: action-effect factorization is useful specifically for manipulation actions but not for movement-dominant ones, bounded state reconstruction is useful, and the present multiscale and sparse-gating mechanisms are not yet competitive. That is still enough for a solid systems paper, because it turns a vague architectural intuition into a reproducible set of wins, failures, and precise conditions under which each claim holds.
 
 \bibliographystyle{plainnat}
 \bibliography{references}

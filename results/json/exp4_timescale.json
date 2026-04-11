@@ -1,137 +1,137 @@
 {
   "4": {
-    "train_examples": 11962,
-    "test_examples": 19773,
+    "train_examples": 25384,
+    "test_examples": 6351,
     "models": {
       "htbs": {
-        "cosine": 0.48688947967132246,
-        "local_top1": 0.27416173570019725,
-        "local_top5": 0.5160572497850604,
+        "cosine": 0.9879809151839279,
+        "local_top1": 0.9996850889623682,
+        "local_top5": 1.0,
         "params": 500375,
-        "train_seconds": 6.465491056442261
+        "train_seconds": 14.664288997650146
       },
       "lstm": {
-        "cosine": 0.47689597413972945,
-        "local_top1": 0.2870581095433166,
-        "local_top5": 0.531735194457088,
+        "cosine": 0.9896001291639166,
+        "local_top1": 0.9995276334435522,
+        "local_top5": 1.0,
         "params": 359959,
-        "train_seconds": 5.280247926712036
+        "train_seconds": 10.844781637191772
       },
       "transformer": {
-        "cosine": 0.4732881968836294,
-        "local_top1": 0.3150761138926819,
-        "local_top5": 0.5676427451575381,
+        "cosine": 0.9916403440861529,
+        "local_top1": 0.999842544481184,
+        "local_top5": 1.0,
         "params": 484631,
-        "train_seconds": 25.31265878677368
+        "train_seconds": 45.283042907714844
       },
       "mlp_control": {
-        "cosine": 0.5554516960192785,
-        "local_top1": 0.3327264451524807,
-        "local_top5": 0.6041066100237698,
+        "cosine": 0.9932870868903748,
+        "local_top1": 1.0,
+        "local_top5": 1.0,
         "params": 241815,
-        "train_seconds": 2.1532227993011475
+        "train_seconds": 4.664927005767822
       }
     }
   },
   "8": {
-    "train_examples": 8762,
-    "test_examples": 14973,
+    "train_examples": 18984,
+    "test_examples": 4751,
     "models": {
       "htbs": {
-        "cosine": 0.4791824790503381,
-        "local_top1": 0.31149402257396647,
-        "local_top5": 0.5970079476390837,
+        "cosine": 0.9870825183815616,
+        "local_top1": 0.9987371079772679,
+        "local_top5": 1.0,
         "params": 500375,
-        "train_seconds": 8.284396886825562
+        "train_seconds": 19.960978984832764
       },
       "lstm": {
-        "cosine": 0.4840385679570836,
-        "local_top1": 0.2865157283109597,
-        "local_top5": 0.57563614506111,
+        "cosine": 0.9865335501060815,
+        "local_top1": 0.9987371079772679,
+        "local_top5": 1.0,
         "params": 359959,
-        "train_seconds": 6.698382139205933
+        "train_seconds": 13.287067174911499
       },
       "transformer": {
-        "cosine": 0.45651787343776906,
-        "local_top1": 0.34782608695652173,
-        "local_top5": 0.6499699459026247,
+        "cosine": 0.9906736009624275,
+        "local_top1": 1.0,
+        "local_top5": 1.0,
         "params": 484631,
-        "train_seconds": 27.391486883163452
+        "train_seconds": 45.90900707244873
       },
       "mlp_control": {
-        "cosine": 0.5567277979822506,
-        "local_top1": 0.34695785747679153,
-        "local_top5": 0.649302077072063,
+        "cosine": 0.9924982695598599,
+        "local_top1": 1.0,
+        "local_top5": 1.0,
         "params": 241815,
-        "train_seconds": 1.5404689311981201
+        "train_seconds": 3.6000869274139404
       }
     }
   },
   "12": {
-    "train_examples": 5562,
-    "test_examples": 10173,
+    "train_examples": 12584,
+    "test_examples": 3151,
     "models": {
       "htbs": {
-        "cosine": 0.4644926982124061,
-        "local_top1": 0.2843802221566893,
-        "local_top5": 0.6554605327828565,
+        "cosine": 0.9861449504307208,
+        "local_top1": 0.999047921294827,
+        "local_top5": 1.0,
         "params": 500375,
-        "train_seconds": 7.752335071563721
+        "train_seconds": 18.063846826553345
       },
       "lstm": {
-        "cosine": 0.4792702559194598,
-        "local_top1": 0.3098397719453455,
-        "local_top5": 0.6685343556473017,
+        "cosine": 0.9849143098627186,
+        "local_top1": 0.999682640431609,
+        "local_top5": 1.0,
         "params": 359959,
-        "train_seconds": 5.75508713722229
+        "train_seconds": 11.758472919464111
       },
       "transformer": {
-        "cosine": 0.46055695608113234,
-        "local_top1": 0.3392312985353386,
-        "local_top5": 0.6953700973164259,
+        "cosine": 0.9898110018083687,
+        "local_top1": 0.999682640431609,
+        "local_top5": 1.0,
         "params": 484631,
-        "train_seconds": 23.475986003875732
+        "train_seconds": 39.51655077934265
       },
       "mlp_control": {
-        "cosine": 0.530388469665812,
-        "local_top1": 0.35417281038041876,
-        "local_top5": 0.7205347488449818,
+        "cosine": 0.9909260098762416,
+        "local_top1": 0.999682640431609,
+        "local_top5": 1.0,
         "params": 241815,
-        "train_seconds": 1.1107923984527588
+        "train_seconds": 2.4761979579925537
       }
     }
   },
   "16": {
-    "train_examples": 2362,
-    "test_examples": 5441,
+    "train_examples": 6236,
+    "test_examples": 1567,
     "models": {
       "htbs": {
-        "cosine": 0.4644890140733163,
-        "local_top1": 0.3302701709244624,
-        "local_top5": 0.8147399375114869,
+        "cosine": 0.9813903445792792,
+        "local_top1": 0.9993618379068283,
+        "local_top5": 1.0,
         "params": 500375,
-        "train_seconds": 4.9506330490112305
+        "train_seconds": 11.61469316482544
       },
       "lstm": {
-        "cosine": 0.5087109592289111,
-        "local_top1": 0.31538320161734973,
-        "local_top5": 0.8222753170373093,
+        "cosine": 0.9797780283637008,
+        "local_top1": 0.9993618379068283,
+        "local_top5": 1.0,
         "params": 359959,
-        "train_seconds": 3.2214598655700684
+        "train_seconds": 7.475513935089111
       },
       "transformer": {
-        "cosine": 0.4533715947922966,
-        "local_top1": 0.4368682227531704,
-        "local_top5": 0.8702444403602279,
+        "cosine": 0.9873119178439069,
+        "local_top1": 0.9993618379068283,
+        "local_top5": 1.0,
         "params": 484631,
-        "train_seconds": 12.076128959655762
+        "train_seconds": 22.38829803466797
       },
       "mlp_control": {
-        "cosine": 0.5427150487943599,
-        "local_top1": 0.4159161918764933,
-        "local_top5": 0.8527844146296637,
+        "cosine": 0.9887964664254131,
+        "local_top1": 0.9993618379068283,
+        "local_top5": 1.0,
         "params": 241815,
-        "train_seconds": 0.5181388854980469
+        "train_seconds": 1.2745959758758545
       }
     }
   }

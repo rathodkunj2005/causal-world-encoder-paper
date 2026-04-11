@@ -1,25 +1,25 @@
 {
-  "train_transitions": 11162,
-  "test_seen_transitions": 19573,
-  "test_held_transitions": 3800,
+  "train_transitions": 24584,
+  "test_seen_transitions": 6151,
+  "test_held_transitions": 1400,
   "single_stream_seen": {
-    "cosine": 0.5398724263017495,
-    "local_top1": 0.34103101210851683,
-    "local_top5": 0.6125785520870587
+    "cosine": 0.9939281592677617,
+    "local_top1": 0.9996748496179483,
+    "local_top5": 1.0
   },
   "single_stream_held_out": {
-    "cosine": 0.40459389708274485,
-    "local_top1": 0.30026315789473684,
+    "cosine": 0.6185990791075996,
+    "local_top1": 0.5271428571428571,
     "local_top5": 1.0
   },
   "twin_stream_seen": {
-    "cosine": 0.552986241666481,
-    "local_top1": 0.32432432432432434,
-    "local_top5": 0.5987329484493946
+    "cosine": 0.9942663887461459,
+    "local_top1": 0.9993496992358966,
+    "local_top5": 1.0
   },
   "twin_stream_held_out": {
-    "cosine": 0.4223712512321378,
-    "local_top1": 0.32710526315789473,
+    "cosine": 0.649287023629461,
+    "local_top1": 0.6171428571428571,
     "local_top5": 1.0
   },
   "seen_actions": [

@@ -10,31 +10,31 @@
       3,
       5
     ],
-    "train_n": 11162,
-    "test_seen_n": 19573,
-    "test_held_n": 3800,
+    "train_n": 24584,
+    "test_seen_n": 6151,
+    "test_held_n": 1400,
     "single_stream_seen": {
-      "cosine": 0.5398724263017495,
-      "local_top1": 0.34103101210851683,
-      "local_top5": 0.6125785520870587
+      "cosine": 0.9939281592677617,
+      "local_top1": 0.9996748496179483,
+      "local_top5": 1.0
     },
     "single_stream_held_out": {
-      "cosine": 0.40459389708274485,
-      "local_top1": 0.30026315789473684,
+      "cosine": 0.6185990791075996,
+      "local_top1": 0.5271428571428571,
       "local_top5": 1.0
     },
     "twin_stream_seen": {
-      "cosine": 0.552986241666481,
-      "local_top1": 0.32432432432432434,
-      "local_top5": 0.5987329484493946
-    },
-    "twin_stream_held_out": {
-      "cosine": 0.4223712512321378,
-      "local_top1": 0.32710526315789473,
+      "cosine": 0.9942663887461459,
+      "local_top1": 0.9993496992358966,
       "local_top5": 1.0
     },
-    "heldout_cosine_gain": 0.017777354149392965,
-    "heldout_top1_gain": 0.02684210526315789
+    "twin_stream_held_out": {
+      "cosine": 0.649287023629461,
+      "local_top1": 0.6171428571428571,
+      "local_top5": 1.0
+    },
+    "heldout_cosine_gain": 0.03068794452186141,
+    "heldout_top1_gain": 0.08999999999999997
   },
   "turning": {
     "seen_actions": [
@@ -47,31 +47,31 @@
       0,
       1
     ],
-    "train_n": 8000,
-    "test_seen_n": 14176,
-    "test_held_n": 9197,
+    "train_n": 17749,
+    "test_seen_n": 4427,
+    "test_held_n": 3124,
     "single_stream_seen": {
-      "cosine": 0.5986416322714176,
-      "local_top1": 0.4089305869074492,
-      "local_top5": 0.7382195259593679
+      "cosine": 0.9964517204708188,
+      "local_top1": 1.0,
+      "local_top5": 1.0
     },
     "single_stream_held_out": {
-      "cosine": 0.40270977250310575,
-      "local_top1": 0.16483635968250515,
-      "local_top5": 0.6758725671414592
+      "cosine": 0.31838273340728845,
+      "local_top1": 0.002240717029449424,
+      "local_top5": 0.4580665813060179
     },
     "twin_stream_seen": {
-      "cosine": 0.5942400700841561,
-      "local_top1": 0.4123165914221219,
-      "local_top5": 0.6969525959367946
+      "cosine": 0.9972240095863446,
+      "local_top1": 1.0,
+      "local_top5": 1.0
     },
     "twin_stream_held_out": {
-      "cosine": 0.415859557207436,
-      "local_top1": 0.17244753724040449,
-      "local_top5": 0.6740241383059693
+      "cosine": 0.319515281758735,
+      "local_top1": 0.006722151088348271,
+      "local_top5": 0.4055697823303457
     },
-    "heldout_cosine_gain": 0.013149784704330258,
-    "heldout_top1_gain": 0.007611177557899335
+    "heldout_cosine_gain": 0.0011325483514465495,
+    "heldout_top1_gain": 0.004481434058898847
   },
   "forward_drop": {
     "seen_actions": [
@@ -84,30 +84,30 @@
       2,
       4
     ],
-    "train_n": 9562,
-    "test_seen_n": 12997,
-    "test_held_n": 10376,
+    "train_n": 18035,
+    "test_seen_n": 4524,
+    "test_held_n": 3027,
     "single_stream_seen": {
-      "cosine": 0.5384690493537014,
-      "local_top1": 0.4117873355389705,
-      "local_top5": 0.7433253827806416
+      "cosine": 0.9920534929482944,
+      "local_top1": 0.9993368700265252,
+      "local_top5": 1.0
     },
     "single_stream_held_out": {
-      "cosine": 0.38094649151105464,
-      "local_top1": 0.1280840400925212,
-      "local_top5": 0.5332498072474943
+      "cosine": 0.5038832592410856,
+      "local_top1": 0.2986455236207466,
+      "local_top5": 0.7727122563594317
     },
     "twin_stream_seen": {
-      "cosine": 0.5436829796522102,
-      "local_top1": 0.38708932830653225,
-      "local_top5": 0.7215511271831961
+      "cosine": 0.9928199031071574,
+      "local_top1": 1.0,
+      "local_top5": 1.0
     },
     "twin_stream_held_out": {
-      "cosine": 0.40199909863222333,
-      "local_top1": 0.15256360832690824,
-      "local_top5": 0.5399961449498843
+      "cosine": 0.47224800477218504,
+      "local_top1": 0.2748595969606871,
+      "local_top5": 0.7413280475718533
     },
-    "heldout_cosine_gain": 0.021052607121168687,
-    "heldout_top1_gain": 0.024479568234387045
+    "heldout_cosine_gain": -0.03163525446890053,
+    "heldout_top1_gain": -0.023785926660059464
   }
 }

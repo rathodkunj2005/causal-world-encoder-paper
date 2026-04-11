@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from common import FIGURES_DIR, JSON_DIR, ensure_dirs, set_seed
 from cwe_components import MLP, TwinStreamPredictor
 from data_utils import load_minigrid_transitions, load_sentence_model
-from run_real_experiments import action_embedding_matrix, batched_indices, local_decode_stats, make_transition_arrays
+from run_real_experiments import action_embedding_matrix, batched_indices, local_decode_stats, make_stratified_split, make_transition_arrays
 
 
 def train_models(train, action_embs, device, epochs=25):
@@ -53,13 +53,12 @@ def evaluate(model, twin_mode, trs, action_embs, device):
 
 def main():
     ensure_dirs()
-    set_seed(7)
     device = torch.device('cpu')
+    set_seed(7)
     sent = load_sentence_model()
     action_embs = action_embedding_matrix(sent)
     transitions, episodes = load_minigrid_transitions()
-    train_eps = set(ep[0].episode_id for ep in episodes[:800])
-    test_eps = set(ep[0].episode_id for ep in episodes[800:])
+    train_eps, test_eps = make_stratified_split(episodes, train_frac=0.8, seed=7)
     splits = [
         {'name': 'pickup_toggle', 'held_out': {3, 5}},
         {'name': 'turning', 'held_out': {0, 1}},
@@ -67,6 +66,8 @@ def main():
     ]
     all_results = {}
     for split in splits:
+        # Reset seed before each split so all three splits see identical initialization conditions
+        set_seed(7)
         held = split['held_out']
         seen = {0, 1, 2, 3, 4, 5} - held
         train = [t for t in transitions if t.episode_id in train_eps and t.action_id in seen]

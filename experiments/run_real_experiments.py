@@ -14,6 +14,24 @@ from cwe_components import CausalTransformer, HTBSPredictor, MLP, MLPControl, Se
 from data_utils import build_tfidf, fetch_arxiv_entries, load_locomo, load_minigrid_transitions, load_sentence_model
 
 
+def make_stratified_split(episodes, train_frac=0.8, seed=7):
+    """Split episodes 80/20 stratified by dataset name to avoid dataset-confounded splits."""
+    rng = np.random.default_rng(seed)
+    datasets = {}
+    for ep in episodes:
+        ds = ep[0].episode_id.split(':')[0]
+        datasets.setdefault(ds, []).append(ep[0].episode_id)
+    train_eps = set()
+    test_eps = set()
+    for ds, ep_ids in datasets.items():
+        ep_ids_arr = np.array(ep_ids)
+        rng.shuffle(ep_ids_arr)
+        n_train = int(len(ep_ids_arr) * train_frac)
+        train_eps |= set(ep_ids_arr[:n_train])
+        test_eps |= set(ep_ids_arr[n_train:])
+    return train_eps, test_eps
+
+
 ARXIV_IDS = [
     '2402.17753',  # LoCoMo
     '2310.08560',  # MemGPT
@@ -256,8 +274,7 @@ def run_intervention_experiment(sentence_model, device):
     action_embs = action_embedding_matrix(sentence_model)
     seen_actions = {0, 1, 2, 4}
     held_out_actions = {3, 5}
-    train_eps = set(ep[0].episode_id for ep in episodes[:800])
-    test_eps = set(ep[0].episode_id for ep in episodes[800:])
+    train_eps, test_eps = make_stratified_split(episodes, train_frac=0.8, seed=7)
 
     train = [t for t in transitions if t.episode_id in train_eps and t.action_id in seen_actions]
     test_seen = [t for t in transitions if t.episode_id in test_eps and t.action_id in seen_actions]
@@ -387,8 +404,7 @@ def count_params(model):
 def run_timescale_experiment(sentence_model, device):
     transitions, episodes = load_minigrid_transitions()
     action_embs = action_embedding_matrix(sentence_model)
-    train_ids = set(ep[0].episode_id for ep in episodes[:800])
-    test_ids = set(ep[0].episode_id for ep in episodes[800:])
+    train_ids, test_ids = make_stratified_split(episodes, train_frac=0.8, seed=7)
     lengths = [4, 8, 12, 16]
     results = {}
     for L in lengths:
@@ -434,8 +450,7 @@ def run_timescale_experiment(sentence_model, device):
 def run_sparse_experiment(sentence_model, device):
     transitions, episodes = load_minigrid_transitions()
     action_embs = action_embedding_matrix(sentence_model)
-    train_eps = set(ep[0].episode_id for ep in episodes[:800])
-    test_eps = set(ep[0].episode_id for ep in episodes[800:])
+    train_eps, test_eps = make_stratified_split(episodes, train_frac=0.8, seed=7)
     train = [t for t in transitions if t.episode_id in train_eps]
     test = [t for t in transitions if t.episode_id in test_eps]
     Xs, Xa, Y, _ = make_transition_arrays(train, action_embs)
@@ -480,7 +495,10 @@ def run_sparse_experiment(sentence_model, device):
     low_mask = ~high_mask
     gate_threshold = float(np.quantile(gates, 0.7))
     committed_mask = gates >= gate_threshold
-    committed_stats = local_decode_stats(sparse_pred[committed_mask], [m for m, keep in zip(meta, committed_mask) if keep])
+    committed_meta = [m for m, keep in zip(meta, committed_mask) if keep]
+    committed_stats = local_decode_stats(sparse_pred[committed_mask], committed_meta)
+    # Fair comparison: evaluate dense on the same committed subset selected by the sparse gate
+    dense_committed_stats = local_decode_stats(dense_pred[committed_mask], committed_meta)
     results = {
         'dense': dense_metrics,
         'sparse': sparse_metrics,
@@ -491,9 +509,10 @@ def run_sparse_experiment(sentence_model, device):
         'high_change_threshold': 0.5,
         'high_change_commitment_rate': float(committed_mask[high_mask].mean()),
         'low_change_commitment_rate': float(committed_mask[low_mask].mean()),
-        'accuracy_per_commit_dense': float(dense_metrics['local_top1']),
+        'accuracy_per_commit_dense': float(dense_committed_stats['local_top1']),
         'accuracy_per_commit_sparse': float(committed_stats['local_top1']),
         'committed_subset': committed_stats,
+        'dense_committed_subset': dense_committed_stats,
     }
     save_json(JSON_DIR / 'exp5_sparse.json', results)
 
